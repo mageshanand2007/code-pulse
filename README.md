@@ -10,7 +10,7 @@
 [![React](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite%20%2B%20TailwindCSS-06B6D4)](https://react.dev/)
 [![Backend](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-6366F1)](https://expressjs.com/)
 [![AI Engine](https://img.shields.io/badge/AI%20Engine-Groq%20%7C%20Llama%203.3%2070B-10B981)](https://groq.com/)
-[![CI](https://github.com/your-username/CodePulse/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/CodePulse/actions)
+[![CI](https://github.com/mageshanand2007/CodePulse/actions/workflows/ci.yml/badge.svg)](https://github.com/mageshanand2007/CodePulse/actions)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 [Features](#-key-features) • [Quickstart](#-quickstart) • [Scoring Rubric](#-100-point-health-scoring-rubric) • [Architecture](#-architecture) • [API Config](#-environment-variables) • [Contributing](#-contributing)
@@ -22,6 +22,8 @@
 ## 🌟 Overview
 
 **CodePulse** audits public GitHub repositories by combining real-time telemetry from the GitHub REST API with an intelligent scoring engine and Groq's ultra-fast LLM inference (`llama-3.3-70b-versatile`). Maintainers, engineering leads, open-source contributors, and security auditors can evaluate codebase health at a glance.
+
+## 🏗 Architecture
 
 ```
        ┌────────────────────────┐
@@ -122,7 +124,7 @@ The composite health score is calculated across six weighted pillars:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/CodePulse.git
+   git clone https://github.com/mageshanand2007/CodePulse.git
    cd CodePulse
    ```
 
@@ -153,7 +155,9 @@ Create a `server/.env` file based on `server/.env.example`:
 # Server Port
 PORT=5000
 
-# Client URL (for CORS)
+# Client URL — reserved for a production CORS allow-list.
+# Note: the server currently accepts all origins (`cors({ origin: true })`),
+# so this value is not read yet.
 CLIENT_URL=http://localhost:5173
 
 # GitHub Personal Access Token (Optional but Recommended)
@@ -169,7 +173,9 @@ GROQ_API_KEY=
 # Groq Model
 GROQ_MODEL=llama-3.3-70b-versatile
 
-# Cache TTL (in milliseconds - default: 15 min)
+# Cache TTL in milliseconds — documented target only.
+# Note: the in-memory cache currently uses a fixed 15-minute TTL,
+# so this value is not read yet.
 CACHE_TTL_MS=900000
 ```
 
@@ -207,7 +213,7 @@ Looking for an easy way to contribute? Check out our curated beginner tasks:
 
 Automate creating these issues on your GitHub repository with:
 ```bash
-GITHUB_TOKEN=your_token node scripts/create-issues.js your-username/CodePulse
+GITHUB_TOKEN=your_token node scripts/create-issues.js mageshanand2007/CodePulse
 ```
 
 ---

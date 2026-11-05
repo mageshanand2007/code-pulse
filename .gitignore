@@ -46,3 +46,6 @@ Thumbs.db
 .cache/
 .eslintcache
 .parcel-cache
+
+# Local tool state
+/.freebuff/
