@@ -3,7 +3,7 @@
 # ⚡ CodePulse
 ### GitHub Repository Health & Risk Monitor
 
-*Production-grade open-source web application for analyzing repository health, detecting exposed secrets, measuring issue/PR velocity, visualizing commit activity, and generating AI-powered maintenance blueprints.*
+*A full-stack dashboard for exploring public GitHub repository health, understanding six transparent scoring pillars, and finding practical maintenance improvements.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B%20%7C%2020%2B%20%7C%2022%2B-brightgreen)](https://nodejs.org/)
@@ -21,7 +21,11 @@
 
 ## 🌟 Overview
 
-**CodePulse** audits public GitHub repositories by combining real-time telemetry from the GitHub REST API with an intelligent scoring engine and Groq's ultra-fast LLM inference (`llama-3.3-70b-versatile`). Maintainers, engineering leads, open-source contributors, and security auditors can evaluate codebase health at a glance.
+**CodePulse** turns public GitHub repository metadata into an explainable health report. Search for a repository to review its documentation, activity, issues and pull requests, code-quality signals, security-related file indicators, and dependency configuration in one dashboard.
+
+The React frontend communicates with an Express API. The API gathers repository data from GitHub, calculates a 0–100 score across six weighted pillars, and can generate recommendations with Groq. If no Groq key is configured—or the request fails—the backend uses its built-in rule-based recommendation engine. No database is required: GitHub responses are cached in process memory for 15 minutes.
+
+> **Scope note:** CodePulse analyzes public GitHub metadata and repository file paths using heuristics. Its security indicators are not a full secret scan, vulnerability audit, or substitute for a dedicated security tool. GitHub metrics may be based on limited samples and should be interpreted accordingly.
 
 ## 🏗 Architecture
 
@@ -64,18 +68,16 @@
 
 ## 🚀 Key Features
 
-1. **Composite Health Score (0 to 100):** Weighted multi-dimensional rubric with letter grades (**A+**, **A**, **B**, **C**, **D**, **F**) and interactive 6-pillar radar charts.
-2. **Code Quality & Architecture Indicators:** Detects automated CI/CD pipelines (`.github/workflows`, CircleCI, Travis), test directories (Jest, Vitest, Pytest, Go test), linter configs (ESLint, Prettier, Biome, Ruff), and branch health.
-3. **README & Documentation Analysis:** Evaluates structural completeness (Installation, Usage, Contributing, License, Badges), reading time, word count, and readability index.
-4. **Issue & PR Velocity Metrics:** Calculates issue close rates, median resolution turnaround time (in days), PR merge velocity, and flags stale issues (>60 days inactive).
-5. **Commit Activity Visualization:** Interactive gradient AreaChart showing weekly commit velocity, 30-day commit volume, last commit recency, and top contributor breakdowns with avatars.
-6. **Dependency & Outdated Package Analysis:** Parses `package.json`, `requirements.txt`, `Cargo.toml`, and `go.mod`. Verifies lockfiles (`package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `Cargo.lock`) and flags unpinned or bloated dependencies.
-7. **Security Risk Indicators for Leaked Secrets:** Scans tree files for accidentally committed secrets (`.env`, `.pem`, `id_rsa`, `credentials.json`, `*.key`), checks `.gitignore`, and verifies `SECURITY.md` vulnerability reporting channels.
-8. **AI-Generated Recommendations via Groq:** High-speed synthesis using Groq's `llama-3.3-70b-versatile` generating prioritized, categorized improvements with copy-pasteable code fixes (GitHub Actions workflows, Dependabot YAML, `.gitignore` entries). Includes an intelligent offline fallback engine.
-9. **Premium Dark Developer Dashboard:** Polished dark mode UI with modern typography (`Inter`, `JetBrains Mono`), glowing visual accents, confetti celebrations on top scores, and mobile responsiveness.
-10. **Head-to-Head Repository Comparison:** Side-by-side comparison of any two repositories with winning metric badges, comparative radar charts, and differential breakdowns.
-11. **One-Click Demo Repositories:** Instant pre-cached analysis for popular repositories (`facebook/react`, `expressjs/express`, `vercel/next.js`, `tailwindlabs/tailwindcss`) without hitting GitHub rate limits.
-12. **Multi-Format Report Export:** Download JSON telemetry, print formatted PDF reports, or copy Markdown summaries directly into GitHub issues or pull requests.
+1. **Explainable six-pillar health score:** Review the 0–100 score, grade, normalized pillar scores, weighted point contributions, criterion progress bars, deductions, and improvement suggestions.
+2. **Documentation signals:** Checks README structure and quality, repository description and topics, license metadata, and community contribution files.
+3. **Maintenance and activity:** Summarizes recent commits, commit activity, releases where available, and repository archive status.
+4. **Issue and pull request metrics:** Shows close/merge rates, issue resolution time, open counts, and stale-item estimates from the fetched sample.
+5. **Code-quality indicators:** Looks for CI configuration, test files/configuration, linter configuration, and repository tree size.
+6. **Security-related indicators:** Flags selected sensitive-looking file names, checks for `.gitignore` and `SECURITY.md`, and detects Dependabot/Renovate configuration. This is path-based heuristic analysis, not content scanning.
+7. **Dependency overview:** Recognizes selected manifests and lockfiles, reports dependency counts and loose versions where supported, and estimates dependency hygiene.
+8. **AI recommendations:** Uses Groq when configured and otherwise provides rule-based recommendations. Suggestions may include example configuration snippets.
+9. **Repository comparison:** Compares two repositories side-by-side across the same six pillars.
+10. **Demo repositories and exports:** Provides built-in demo data for `facebook/react`, `expressjs/express`, and `vercel/next.js`; export reports as JSON, Markdown, or print-to-PDF.
 
 ---
 
@@ -85,12 +87,14 @@ The composite health score is calculated across six weighted pillars:
 
 | Pillar | Weight | Key Evaluation Criteria |
 | :--- | :---: | :--- |
-| **1. Documentation & Community** | **20%** | Comprehensive README (+8), OSI-approved License (+3), Description & Topics (+4), CONTRIBUTING, CODE_OF_CONDUCT & Issue/PR templates (+5). |
-| **2. Maintenance Cadence** | **20%** | Last commit recency (<7d = +8, <30d = +6, <90d = +4), 4-week commit velocity (+6), formal releases/tags (+4), non-archived status (+2). |
-| **3. Issue & PR Management** | **18%** | Issue close rate (>80% = +7), PR merge turnaround rate (>70% = +6), low stale issues ratio (+5). |
-| **4. Code Quality & Architecture**| **16%** | Automated CI/CD workflows (+6), automated test suite (+5), code linters/formatters (+3), modular codebase structure (+2). |
-| **5. Security Posture** | **14%** | Zero exposed sensitive files (+7, up to -35 penalty if `.env` or keys leaked!), `SECURITY.md` policy (+4), Dependabot/Renovate scanning (+3). |
-| **6. Dependency Hygiene** | **12%** | Deterministic lockfile presence (+4), version pinning without loose wildcards (+4), sustainable package footprint (+4). |
+| **1. Documentation & Community** | **20%** | README quality, repository description and topics, license, contributor guidance, Code of Conduct, and issue/PR templates. |
+| **2. Maintenance & Activity** | **20%** | Last-commit recency, recent commit volume, release metadata, and non-archived status. |
+| **3. Issues & PR Velocity** | **18%** | Issue close rate, PR merge rate, and stale-item ratio. |
+| **4. Code Quality & Testing** | **16%** | CI configuration, test indicators, linter/formatter configuration, and repository structure. |
+| **5. Security Posture** | **14%** | Sensitive-looking file paths, `.gitignore`, `SECURITY.md`, and Dependabot/Renovate configuration. |
+| **6. Dependency Hygiene** | **12%** | Lockfile presence, version specifications, and direct dependency footprint. |
+
+Pillar contributions are added together to form the composite score. The dashboard also shows each pillar as a normalized percentage and its weighted contribution in points. Exact checks and point allocations are maintained in `server/src/services/healthScorer.js`; the figures may differ from an independent assessment because GitHub data is sampled and some signals are heuristic.
 
 ### Grade Scale
 
@@ -128,15 +132,12 @@ The composite health score is calculated across six weighted pillars:
    cd CodePulse
    ```
 
-2. **Install all dependencies:**
+2. **Install root, server, and client dependencies:**
    ```bash
    npm run install:all
    ```
 
-3. **Configure environment variables:**
-   ```bash
-   cp server/.env.example server/.env
-   ```
+3. **Optionally configure API credentials:** Copy `server/.env.example` to `server/.env` and add a GitHub token and/or Groq key. Both services can run without these keys; unauthenticated GitHub requests have a lower rate limit, and AI suggestions use the fallback engine without a Groq key.
 
 4. **Start local development servers:**
    ```bash
@@ -144,6 +145,21 @@ The composite health score is calculated across six weighted pillars:
    ```
    - **Frontend:** [http://localhost:5173](http://localhost:5173)
    - **Backend API:** [http://localhost:5000](http://localhost:5000)
+   - **Backend health check:** [http://localhost:5000/api/health](http://localhost:5000/api/health)
+
+The Vite development server proxies `/api` requests to the backend. You can also start the production API with `npm start` from the repository root; to serve the built frontend through Express, build it first with `npm run build`.
+
+### Windows PowerShell setup
+
+```powershell
+git clone https://github.com/mageshanand2007/CodePulse.git
+Set-Location CodePulse
+npm run install:all
+Copy-Item server/.env.example server/.env # Optional: edit this file to add API keys
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173).
 
 ---
 
@@ -173,14 +189,45 @@ GROQ_API_KEY=
 # Groq Model
 GROQ_MODEL=llama-3.3-70b-versatile
 
-# Cache TTL in milliseconds — documented target only.
-# Note: the in-memory cache currently uses a fixed 15-minute TTL,
-# so this value is not read yet.
+# Cache TTL in milliseconds (currently informational; the in-memory cache uses a fixed 15-minute TTL).
 CACHE_TTL_MS=900000
 ```
 
 > [!NOTE]
-> **API Key Safety:** Users can also supply their own optional GitHub Token or Groq API key directly in the web dashboard's **API Configuration modal**. Keys are stored exclusively in the browser's `localStorage` and never saved to any database.
+> **API key handling:** You may configure keys in `server/.env` or enter them in the dashboard's API Configuration modal. Dashboard-entered keys are stored in that browser's `localStorage` and sent to the backend with requests; they are not stored in a CodePulse database. Use HTTPS when deploying the application and only enter keys into a server you trust.
+
+## 🧭 Using CodePulse
+
+### Analyze a repository
+
+1. Open the dashboard and enter a public GitHub repository as `owner/repo` or as a GitHub URL (for example, `facebook/react`).
+2. Select **Analyze**. The report includes repository metadata, the composite health score, six-pillar breakdown, activity, issue/PR metrics, documentation, code-quality indicators, security signals, dependencies, and recommendations.
+3. Select **Refresh** to request fresh GitHub data rather than using the cached result.
+4. Use **Export Report** to copy Markdown, download JSON, or print/save the report as a PDF.
+
+The built-in demo repositories can be selected from the dashboard without a live GitHub fetch. Demo reports are example snapshots, not a guarantee of current repository metrics.
+
+### Compare repositories
+
+Select **Compare Repos**, enter two repositories (for example, `facebook/react` and `vercel/next.js`), and run the comparison. The page displays the overall winner, score difference, and side-by-side pillar scores.
+
+### Call the API
+
+Analyze a repository:
+
+```bash
+curl "http://localhost:5000/api/analyze?repo=facebook%2Freact"
+```
+
+Compare two repositories:
+
+```bash
+curl -X POST "http://localhost:5000/api/compare" \
+  -H "Content-Type: application/json" \
+  -d "{\"repo1\":\"facebook/react\",\"repo2\":\"vercel/next.js\"}"
+```
+
+Other useful endpoints include `GET /api/health`, `GET /api/presets`, and `GET /api/rate-limit`. For an authenticated GitHub API request, send the optional `x-github-token` header. The dashboard's saved GitHub token is sent automatically.
 
 ---
 
