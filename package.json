@@ -1,0 +1,26 @@
+{
+  "name": "codepulse",
+  "version": "1.0.0",
+  "description": "CodePulse – GitHub Repository Health Monitor. Analyze public GitHub repos, compute 100-point health scores, identify security risks, visualize activity, and get AI recommendations with Groq.",
+  "scripts": {
+    "install:all": "npm install && npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"cyan,magenta\" \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "start": "npm run start --prefix server",
+    "build": "npm run build --prefix client",
+    "test": "npm run test --prefix server"
+  },
+  "keywords": [
+    "github",
+    "repository-health",
+    "developer-tool",
+    "groq",
+    "ai",
+    "dashboard",
+    "code-quality"
+  ],
+  "author": "Magesh Anand",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

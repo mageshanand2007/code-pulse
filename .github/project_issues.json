@@ -1,0 +1,27 @@
+[
+  {
+    "title": "feat: Add support for pyproject.toml and requirements-dev.txt in dependency analyzer",
+    "labels": ["good first issue", "enhancement", "dependencies"],
+    "body": "## Description\nCurrently, the dependency scanner parses `package.json`, `requirements.txt`, `Cargo.toml`, and `go.mod`.\n\nWe'd love to add support for modern Python projects using `pyproject.toml` (PEP 621, Poetry, Flit) as well as splitting dependencies from `requirements-dev.txt`.\n\n## Location in Codebase\n- `server/src/services/dependencyParser.js`\n- `client/src/components/DependencyAnalysisCard.jsx`\n\n## Expected Behavior\n- Detect `pyproject.toml` in repository root or tree.\n- Parse `[project.dependencies]`, `[tool.poetry.dependencies]`, or `[project.optional-dependencies]`.\n- Display dependency count and runtime requirements in the Dependencies card.\n\n## Difficulty\nBeginner / Good First Issue"
+  },
+  {
+    "title": "feat: Add embeddable SVG health badge endpoint (/api/badge/:owner/:repo)",
+    "labels": ["good first issue", "enhancement", "api"],
+    "body": "## Description\nAllow repository maintainers to embed a real-time health score badge in their README.md, similar to Shields.io.\n\n## Example Usage\n```markdown\n[![CodePulse Health](https://codepulse.dev/api/badge/facebook/react)](https://codepulse.dev)\n```\n\n## Proposed Implementation\n- Add `/api/badge/:owner/:repo` route in Express.\n- Return an SVG image with `Content-Type: image/svg+xml`.\n- Color code based on grade: A+ (#10B981), B (#06B6D4), C (#F59E0B), F (#F43F5E).\n\n## Difficulty\nBeginner / Good First Issue"
+  },
+  {
+    "title": "feat: Add CSV and JSON download export buttons in the health report modal",
+    "labels": ["good first issue", "enhancement", "frontend"],
+    "body": "## Description\nUsers can currently view reports and copy Markdown summaries. Adding direct download options for JSON and CSV will allow teams to archive audits and feed metrics into CI or compliance spreadsheets.\n\n## Tasks\n- Add a 'Download JSON' button that generates a formatted `.json` file blob.\n- Add a 'Download CSV' button summarizing scores across the 6 pillars.\n\n## Location\n- `client/src/components/ExportReportModal.jsx`\n\n## Difficulty\nBeginner / Good First Issue"
+  },
+  {
+    "title": "feat: Support Composer (composer.json) and Ruby (Gemfile) dependency parsing",
+    "labels": ["good first issue", "enhancement", "dependencies"],
+    "body": "## Description\nPHP and Ruby ecosystems are widely used in open source. Adding support for `composer.json` and `Gemfile` will broaden CodePulse's coverage.\n\n## Details\n- Parse `require` and `require-dev` from `composer.json`.\n- Parse `gem \"name\"` entries from `Gemfile`.\n\n## Location\n- `server/src/services/dependencyParser.js`\n\n## Difficulty\nBeginner / Good First Issue"
+  },
+  {
+    "title": "chore: Add Dockerfile and docker-compose.yml for containerized deployment",
+    "labels": ["good first issue", "devops", "docker"],
+    "body": "## Description\nProvide a multi-stage `Dockerfile` and `docker-compose.yml` to allow developers and organizations to self-host CodePulse with a single command: `docker compose up -d`.\n\n## Requirements\n- Multi-stage build for client (`npm run build` -> Nginx or served by Express).\n- Node.js Alpine base for Express backend.\n- `.dockerignore` to exclude node_modules.\n\n## Difficulty\nBeginner / Good First Issue"
+  }
+]
